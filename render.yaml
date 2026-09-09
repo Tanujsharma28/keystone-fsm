@@ -1,9 +1,8 @@
-services:
+﻿services:
   - type: web
     name: keystone-backend
-    runtime: java
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/backend-0.0.1-SNAPSHOT.jar
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
@@ -17,6 +16,10 @@ services:
         fromDatabase:
           name: keystone-db
           property: password
+      - key: JWT_SECRET
+        value: keystone-super-secret-key-2024-zidio!!
+      - key: JWT_EXPIRATION
+        value: 86400000
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD
