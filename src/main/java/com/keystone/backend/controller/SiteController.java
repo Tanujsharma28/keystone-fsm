@@ -30,12 +30,11 @@ public class SiteController {
         return ResponseEntity.ok(siteService.getSiteById(id));
     }
 
-    @GetMapping("/customer/{customerId}")
-    @PreAuthorize("hasAnyRole('MANAGER','DISPATCHER','TECHNICIAN')")
+        @GetMapping("/customer/{customerId}")
+    @PreAuthorize("hasAnyRole('MANAGER','DISPATCHER','TECHNICIAN','CUSTOMER')")
     public ResponseEntity<List<SiteResponse>> getSitesByCustomer(@PathVariable Long customerId) {
         return ResponseEntity.ok(siteService.getSitesByCustomerId(customerId));
     }
-
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<SiteResponse> createSite(@RequestBody SiteRequest request) {
@@ -56,4 +55,5 @@ public class SiteController {
         siteService.deleteSite(id);
         return ResponseEntity.noContent().build();
     }
+    
 }

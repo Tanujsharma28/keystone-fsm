@@ -1,5 +1,5 @@
 package com.keystone.backend.controller;
-
+import java.util.Map;
 import com.keystone.backend.domain.AppUser;
 import com.keystone.backend.dto.LoginRequest;
 import com.keystone.backend.dto.LoginResponse;
@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,9 +25,8 @@ public class AuthController {
     private final AppUserRepository appUserRepository;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-
-        // email + password authenticate karo
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    try {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -34,15 +34,14 @@ public class AuthController {
                 )
         );
 
-        // UserDetails load karo
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-
-        // JWT generate karo
         String token = jwtService.generateToken(userDetails);
-
-        // Role ke liye AppUser fetch karo
         AppUser appUser = appUserRepository.findByEmail(request.getEmail()).orElseThrow();
 
         return ResponseEntity.ok(new LoginResponse(token, appUser.getEmail(), appUser.getRole().name()));
+    } catch (org.springframework.security.core.AuthenticationException ex) {
+        return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
     }
+}
+
 }

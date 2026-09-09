@@ -1,0 +1,1 @@
+ALTER TABLE work_order ADD COLUMN sla_breached BOOLEAN NOT NULL DEFAULT false;

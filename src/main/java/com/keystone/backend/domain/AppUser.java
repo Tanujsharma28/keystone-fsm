@@ -24,6 +24,10 @@ public class AppUser {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
@@ -35,7 +39,6 @@ public class AppUser {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -50,6 +53,9 @@ public class AppUser {
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }

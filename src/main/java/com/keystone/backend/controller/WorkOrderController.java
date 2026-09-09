@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -31,6 +32,12 @@ public class WorkOrderController {
         return ResponseEntity.ok(workOrderService.getWorkOrderById(id));
     }
 
+        @GetMapping("/my")
+    @PreAuthorize("hasRole('TECHNICIAN')")
+    public ResponseEntity<List<WorkOrderResponse>> getMyWorkOrders(Authentication authentication) {
+        return ResponseEntity.ok(workOrderService.getMyWorkOrders(authentication.getName()));
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('MANAGER','DISPATCHER')")
     public ResponseEntity<WorkOrderResponse> createWorkOrder(@RequestBody WorkOrderRequest request) {
@@ -51,5 +58,20 @@ public class WorkOrderController {
             @PathVariable Long id,
             @RequestParam Long technicianId) {
         return ResponseEntity.ok(workOrderService.assignTechnician(id, technicianId));
+    }
+
+        @GetMapping("/customer/my")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<WorkOrderResponse>> getMyCustomerWorkOrders(Authentication authentication) {
+        return ResponseEntity.ok(workOrderService.getMyCustomerWorkOrders(authentication.getName()));
+    }
+
+    @PostMapping("/customer/request")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<WorkOrderResponse> createCustomerRequest(
+            Authentication authentication,
+            @RequestBody WorkOrderRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(workOrderService.createCustomerRequest(authentication.getName(), request));
     }
 }

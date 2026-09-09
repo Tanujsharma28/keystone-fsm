@@ -18,6 +18,7 @@ public class WorkOrderResponse {
     private String description;
     private Priority priority;
     private LocalDateTime slaDueAt;
+    private boolean slaBreached;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -25,7 +26,7 @@ public class WorkOrderResponse {
                              Long siteId, String siteName,
                              Long assignedTechnicianId, String assignedTechnicianName,
                              WorkOrderStatus status, String title, String description,
-                             Priority priority, LocalDateTime slaDueAt,
+                             Priority priority, LocalDateTime slaDueAt, boolean slaBreached,
                              LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.customerId = customerId;
@@ -39,6 +40,7 @@ public class WorkOrderResponse {
         this.description = description;
         this.priority = priority;
         this.slaDueAt = slaDueAt;
+        this.slaBreached = slaBreached;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -55,6 +57,7 @@ public class WorkOrderResponse {
     public String getDescription() { return description; }
     public Priority getPriority() { return priority; }
     public LocalDateTime getSlaDueAt() { return slaDueAt; }
+    public boolean isSlaBreached() { return slaBreached; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -42,7 +42,7 @@ public class WorkOrderService {
         Priority.LOW,    168
     );
 
-    private WorkOrderResponse toResponse(WorkOrder wo) {
+        private WorkOrderResponse toResponse(WorkOrder wo) {
         AppUser tech = wo.getAssignedTechnician();
         return new WorkOrderResponse(
                 wo.getId(),
@@ -57,6 +57,7 @@ public class WorkOrderService {
                 wo.getDescription(),
                 wo.getPriority(),
                 wo.getSlaDueAt(),
+                wo.isSlaBreached(),
                 wo.getCreatedAt(),
                 wo.getUpdatedAt()
         );
@@ -73,6 +74,65 @@ public class WorkOrderService {
         WorkOrder wo = workOrderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("WorkOrder not found: " + id));
         return toResponse(wo);
+    }
+
+        public List<WorkOrderResponse> getMyWorkOrders(String email) {
+        AppUser technician = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+
+        return workOrderRepository.findByAssignedTechnician_Id(technician.getId())
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+        // Customer sirf apne khud ke work orders dekh sake — brief F9 criteria 2,3
+    public List<WorkOrderResponse> getMyCustomerWorkOrders(String email) {
+        AppUser customerUser = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+
+        if (customerUser.getCustomer() == null) {
+            throw new BusinessException("This account is not linked to a customer.");
+        }
+
+        Long customerId = customerUser.getCustomer().getId();
+
+        return workOrderRepository.findAll().stream()
+                .filter(wo -> wo.getCustomer().getId().equals(customerId))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Customer apne site ke liye naya request raise kar sake — brief F9 criteria 1,4
+    @Transactional
+    public WorkOrderResponse createCustomerRequest(String email, WorkOrderRequest request) {
+        AppUser customerUser = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
+
+        if (customerUser.getCustomer() == null) {
+            throw new BusinessException("This account is not linked to a customer.");
+        }
+
+        // Security: customer sirf apni khud ki customer ID use kar sakta hai,
+        // frontend se aayi customerId ko ignore karke apni asli ID force karte hain
+        Site site = siteRepository.findById(request.getSiteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Site not found: " + request.getSiteId()));
+
+        if (!site.getCustomer().getId().equals(customerUser.getCustomer().getId())) {
+            throw new BusinessException("You can only raise requests for your own sites.");
+        }
+
+        WorkOrder wo = new WorkOrder();
+        wo.setCustomer(customerUser.getCustomer());
+        wo.setSite(site);
+        wo.setTitle(request.getTitle());
+        wo.setDescription(request.getDescription());
+
+        Priority priority = request.getPriority() != null ? request.getPriority() : Priority.MEDIUM;
+        wo.setPriority(priority);
+        wo.setSlaDueAt(LocalDateTime.now().plusHours(SLA_HOURS.get(priority)));
+        // Status default NEW hi rahega — same pipeline mein enter hoga, jaisa brief maangta hai
+
+        return toResponse(workOrderRepository.save(wo));
     }
 
     @Transactional

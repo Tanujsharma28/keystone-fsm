@@ -56,6 +56,8 @@ public class WorkOrder {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+        @Column(name = "sla_breached", nullable = false)
+    private boolean slaBreached = false;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -77,6 +79,9 @@ public class WorkOrder {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    
+    public boolean isSlaBreached() { return slaBreached; }
+    public void setSlaBreached(boolean slaBreached) { this.slaBreached = slaBreached; }
 
     public Priority getPriority() { return priority; }
     public void setPriority(Priority priority) { this.priority = priority; }
