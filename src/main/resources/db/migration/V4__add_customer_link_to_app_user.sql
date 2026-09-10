@@ -1,1 +1,1 @@
-ALTER TABLE app_user ADD COLUMN customer_id BIGINT NULL REFERENCES customer(id);
+ALTER TABLE app_user ADD COLUMN IF NOT EXISTS customer_id BIGINT NULL REFERENCES customer(id)
