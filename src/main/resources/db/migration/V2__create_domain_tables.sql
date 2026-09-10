@@ -1,5 +1,5 @@
 -- APP_USER
-CREATE TABLE app_user (
+CREATE TABLE IF NOT EXISTS app_user (
     id BIGSERIAL PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -10,7 +10,7 @@ CREATE TABLE app_user (
 );
 
 -- CUSTOMER
-CREATE TABLE customer (
+CREATE TABLE IF NOT EXISTS customer (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE customer (
 );
 
 -- SITE
-CREATE TABLE site (
+CREATE TABLE IF NOT EXISTS site (
     id BIGSERIAL PRIMARY KEY,
     customer_id BIGINT NOT NULL REFERENCES customer(id),
     name VARCHAR(255) NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE site (
 );
 
 -- PART
-CREATE TABLE part (
+CREATE TABLE IF NOT EXISTS part (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     sku VARCHAR(100) NOT NULL UNIQUE,
@@ -37,7 +37,7 @@ CREATE TABLE part (
 );
 
 -- WORK_ORDER
-CREATE TABLE work_order (
+CREATE TABLE IF NOT EXISTS work_order (
     id BIGSERIAL PRIMARY KEY,
     customer_id BIGINT NOT NULL REFERENCES customer(id),
     site_id BIGINT NOT NULL REFERENCES site(id),
@@ -52,7 +52,7 @@ CREATE TABLE work_order (
 );
 
 -- WORK_ORDER_STATUS_HISTORY (append-only)
-CREATE TABLE work_order_status_history (
+CREATE TABLE IF NOT EXISTS work_order_status_history (
     id BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL REFERENCES work_order(id),
     from_status VARCHAR(50),
@@ -63,7 +63,7 @@ CREATE TABLE work_order_status_history (
 );
 
 -- PART_USAGE
-CREATE TABLE part_usage (
+CREATE TABLE IF NOT EXISTS part_usage (
     id BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL REFERENCES work_order(id),
     part_id BIGINT NOT NULL REFERENCES part(id),
@@ -72,7 +72,7 @@ CREATE TABLE part_usage (
 );
 
 -- TIME_LOG
-CREATE TABLE time_log (
+CREATE TABLE IF NOT EXISTS time_log (
     id BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL REFERENCES work_order(id),
     technician_id BIGINT NOT NULL REFERENCES app_user(id),

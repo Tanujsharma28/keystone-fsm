@@ -27,7 +27,7 @@ CREATE TYPE priority_level AS ENUM (
 );
 
 -- CUSTOMER table
-CREATE TABLE customer (
+CREATE TABLE IF NOT EXISTS customer (
     id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
     contact_email VARCHAR(255) NOT NULL UNIQUE,
@@ -35,7 +35,7 @@ CREATE TABLE customer (
 );
 
 -- SITE table
-CREATE TABLE site (
+CREATE TABLE IF NOT EXISTS site (
     id          BIGSERIAL PRIMARY KEY,
     customer_id BIGINT NOT NULL REFERENCES customer(id),
     name        VARCHAR(255) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE site (
 );
 
 -- USER table
-CREATE TABLE app_user (
+CREATE TABLE IF NOT EXISTS app_user (
     id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
@@ -55,7 +55,7 @@ CREATE TABLE app_user (
 );
 
 -- PART table
-CREATE TABLE part (
+CREATE TABLE IF NOT EXISTS part (
     id         BIGSERIAL PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
     sku        VARCHAR(100) NOT NULL UNIQUE,
@@ -65,7 +65,7 @@ CREATE TABLE part (
 );
 
 -- WORK ORDER table
-CREATE TABLE work_order (
+CREATE TABLE IF NOT EXISTS work_order (
     id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(50) NOT NULL UNIQUE,
     title       VARCHAR(255) NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE work_order (
 );
 
 -- WORK ORDER STATUS HISTORY table (append-only)
-CREATE TABLE work_order_status_history (
+CREATE TABLE IF NOT EXISTS work_order_status_history (
     id            BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL REFERENCES work_order(id),
     from_status   work_order_status,
@@ -92,7 +92,7 @@ CREATE TABLE work_order_status_history (
 );
 
 -- PART USAGE table
-CREATE TABLE part_usage (
+CREATE TABLE IF NOT EXISTS part_usage (
     id            BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL REFERENCES work_order(id),
     part_id       BIGINT NOT NULL REFERENCES part(id),
@@ -101,7 +101,7 @@ CREATE TABLE part_usage (
 );
 
 -- TIME LOG table
-CREATE TABLE time_log (
+CREATE TABLE IF NOT EXISTS time_log (
     id            BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL REFERENCES work_order(id),
     technician_id BIGINT NOT NULL REFERENCES app_user(id),
