@@ -1,6 +1,6 @@
 ﻿# KEYSTONE — Field Service Management Platform
 
-> Zidio Development · Java Full-Stack Engineering Internship
+> Zidio Development · Java Full-Stack Engineering Internship  
 > Client: Meridian Facilities Management · Stack: Spring Boot 3 · React + TypeScript · PostgreSQL
 
 ## Overview
@@ -24,6 +24,7 @@ KEYSTONE is a full-stack field service management platform that digitises the en
 ## Local Setup
 
 ### Prerequisites
+
 - Java 21+
 - Node.js 18+
 - PostgreSQL 15+
@@ -32,82 +33,127 @@ KEYSTONE is a full-stack field service management platform that digitises the en
 
 Create a PostgreSQL database:
 
-    CREATE DATABASE keystone_db;
+```sql
+CREATE DATABASE keystone_db;
+```
 
 ### 2. Environment Variables
 
-Set these before running the backend (never commit real values):
+Set these before running the backend. Never commit real credentials or secrets.
 
 | Variable | Example |
 |---|---|
 | SPRING_DATASOURCE_URL | jdbc:postgresql://localhost:5432/keystone_db |
 | SPRING_DATASOURCE_USERNAME | postgres |
 | SPRING_DATASOURCE_PASSWORD | yourpassword |
-| JWT_SECRET | keystone-super-secret-key-32chars!! |
+| JWT_SECRET | your-jwt-secret |
 | JWT_EXPIRATION | 86400000 |
 | MAIL_USERNAME | your@gmail.com |
-| MAIL_PASSWORD | xxxx xxxx xxxx xxxx |
+| MAIL_PASSWORD | your-app-password |
 
 ### 3. Run Backend
 
-    cd backend
-    ./mvnw clean spring-boot:run
+From the project root:
+
+```bash
+./mvnw clean spring-boot:run
+```
+
+For Windows:
+
+```powershell
+.\mvnw.cmd clean spring-boot:run
+```
 
 Flyway migrations run automatically on startup.
-Backend runs on: http://localhost:8080
+
+Backend runs on:
+
+```text
+http://localhost:8080
+```
 
 ### 4. Run Frontend
 
-    cd keystone-frontend
-    npm install
-    npm run dev
+If the frontend project is available separately:
 
-Frontend runs on: http://localhost:3000
+```bash
+cd keystone-frontend
+npm install
+npm run dev
+```
 
-## Seed Login Credentials
+Frontend runs on:
+
+```text
+http://localhost:3000
+```
+
+## Demo Credentials
+
+> These credentials are for internship demonstration purposes only.
 
 | Role | Email | Password |
 |---|---|---|
-| Manager/Admin | admin@keystone.com | password123 |
-| Dispatcher | dispatcher@keystone.com | password123 |
-| Technician | tech1@keystone.com | password123 |
-| Customer | customer@keystone.com | password123 |
+| Manager | admin@keystone.com | admin123 |
+| Dispatcher | dispatcher@keystone.com | dispatch123 |
+| Technician | raju@keystone.com | tech123 |
 
 ## API Documentation
+
+### Local
 
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
 
-Click Authorize in Swagger UI, paste JWT from POST /api/auth/login, then test any endpoint.
+### Live Deployment
+
+- Backend API: https://keystone-backend-q27u.onrender.com
+- Swagger UI: https://keystone-backend-q27u.onrender.com/swagger-ui/index.html
+- OpenAPI JSON: https://keystone-backend-q27u.onrender.com/v3/api-docs
+
+Click **Authorize** in Swagger UI and paste the JWT obtained from:
+
+```text
+POST /api/auth/login
+```
+
+Then test the protected endpoints.
 
 ## Architecture
 
-    React SPA (Vite)
-         |
-    Spring Boot Controllers (JWT auth, DTO mapping)
-         |
-    Service Layer (state machine, SLA, transactions)
-         |
-    Spring Data JPA Repositories
-         |
-    PostgreSQL + Flyway Migrations (V1-V4)
+```text
+React SPA (Vite)
+       |
+Spring Boot Controllers
+       |
+Service Layer
+       |
+Spring Data JPA Repositories
+       |
+PostgreSQL + Flyway Migrations (V1-V4)
+```
 
 ### Work-Order Lifecycle
 
-    NEW -> ASSIGNED -> IN_PROGRESS <-> ON_HOLD
-                           |
-                      COMPLETED -> CLOSED (terminal)
-    NEW/ASSIGNED/IN_PROGRESS -> CANCELLED (terminal)
+```text
+NEW -> ASSIGNED -> IN_PROGRESS <-> ON_HOLD
+                       |
+                  COMPLETED -> CLOSED (terminal)
 
-All transitions enforced in the service layer — illegal jumps return HTTP 409.
-Every transition writes an append-only WorkOrderStatusHistory row.
+NEW/ASSIGNED/IN_PROGRESS -> CANCELLED (terminal)
+```
+
+All transitions are enforced in the service layer. Illegal state transitions return HTTP 409.
+
+Every transition writes an append-only `WorkOrderStatusHistory` record.
 
 ### Security Model
 
-- Stateless JWT — no server sessions
+- Stateless JWT authentication
 - BCrypt password hashing
-- @PreAuthorize role checks on every protected endpoint
-- Customers see only their own organisation data
+- `@PreAuthorize` role checks on protected endpoints
+- Customers can access only their own organisation's data
 
 ## Features
 
@@ -127,8 +173,21 @@ Every transition writes an append-only WorkOrderStatusHistory row.
 
 | Component | URL |
 |---|---|
-| Backend API | TBD |
-| Frontend | TBD |
-| Swagger UI | TBD |
+| Backend API | https://keystone-backend-q27u.onrender.com |
+| Swagger UI | https://keystone-backend-q27u.onrender.com/swagger-ui/index.html |
+| OpenAPI JSON | https://keystone-backend-q27u.onrender.com/v3/api-docs |
+| Frontend | Not deployed |
 
-Built for Zidio Development Java Full-Stack Engineering Internship — Project KEYSTONE v1.0
+### Deployment Stack
+
+- Backend: Render
+- Database: Neon PostgreSQL
+- Database Migrations: Flyway
+- Containerisation: Docker
+- Runtime: Java 21
+
+## Project Status
+
+The backend is deployed and running successfully on Render with PostgreSQL hosted on Neon. Flyway migrations are applied automatically during application startup.
+
+Built for **Zidio Development Java Full-Stack Engineering Internship** — Project KEYSTONE v1.0
